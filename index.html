@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Signup</title>
+    <link rel="stylesheet" href="style.css"> </head>
+
+<body>
+    <!-- Dark Mode Toggle --><button id="darkToggle" class="dark-toggle">🌙</button>
+    <!-- Background Video -->
+    <video autoplay muted loop class="bg-video">
+    <source src="vehicles.mp4" type="video/mp4">
+</video>
+    <div class="brand-name" id="brand-name">
+        RideSphere
+    </div>
+    <div class="container" id="container">
+        <!-- Sign Up -->
+        <div class="form-container sign-up">
+            <form onsubmit="return false;">
+
+                <h1>Create Account</h1>
+                <input type="email" id="email-signup" placeholder="Email (must end with @gmail.com)">
+                <input type="text" id="phone-signup" placeholder="Phone Number">
+                <div class="password-wrapper">
+                    <input type="password" id="password-signup" placeholder="Password" oninput="checkStrength(this.value,'signup-strength')">
+                    <span class="toggle-password" onclick="togglePassword('password-signup', this)">👁</span>
+                </div>
+                <small id="signup-strength" class="strength-text"></small>
+                <button type="button" onclick="sendOTP('signup')">Send OTP</button>
+                <div id="otp-section-signup" style="display:none;">
+                    <input type="text" id="otp-signup" placeholder="Enter OTP">
+                    <button type="button" onclick="verifyOTP('signup')">Verify OTP</button>
+                </div>
+                <div id="signup-message" class="message"></div>
+            </form>
+        </div>
+
+        <!-- Sign In -->
+        <div class="form-container sign-in">
+            <form onsubmit="return false;">
+                <h1>Sign In</h1>
+                <input type="email" id="email-signin" placeholder="Email">
+                <input type="text" id="phone-signin" placeholder="Phone Number">
+                <div class="password-wrapper">
+                    <input type="password" id="password-signin" placeholder="Password">
+                    <span class="toggle-password" onclick="togglePassword('password-signin', this)">👁</span>
+                </div>
+                <button type="button" onclick="loginUser()">Login</button>
+                <a href="#" onclick="openForgotPassword()">Forgot your password?</a>
+                <div id="login-message" class="message"></div>
+            </form>
+        </div>
+
+        <!-- Toggle Panels -->
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Login with your personal info</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details to experience RideSphere</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeForgotPassword()">&times;</span>
+            <div id="forgot-step-phone">
+                <h2>Forgot Password</h2>
+                <input type="text" id="phone-forgot" placeholder="Enter phone number">
+                <button type="button" onclick="sendOTP('forgot')">Send OTP</button>
+            </div>
+            <div id="otp-section-forgot" style="display:none;">
+                <h2>Enter OTP</h2>
+                <input type="text" id="otp-forgot" placeholder="Enter OTP">
+                <button type="button" onclick="verifyOTP('forgot')">Verify OTP</button>
+            </div>
+            <div id="reset-password-section" style="display:none;">
+                <h2>Reset Password</h2>
+                <div class="password-wrapper">
+                    <input type="password" id="new-password" placeholder="New Password" oninput="checkStrength(this.value,'reset-strength')">
+                    <span class="toggle-password" onclick="togglePassword('new-password', this)">👁</span>
+                </div>
+                <small id="reset-strength" class="strength-text"></small>
+                <button type="button" onclick="resetPassword()">Reset</button>
+            </div>
+            <div id="forgot-message" class="message"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
