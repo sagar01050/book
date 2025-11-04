@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RideSphere Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="dj.css" />
+</head>
+
+<body>
+    <nav>
+        <div style="display:flex; align-items:center;">
+            <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+            <div class="brand">RideSphere</div>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <button id="darkModeToggle">🌙 Dark Mode</button>
+            <button id="apiConfigBtn" class="btn-secondary" title="Set API URL">⚙️ API</button>
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#offers">Offers</a></li>
+            <li><a href="#routes">Routes</a></li>
+            <li><a href="#schedules">Schedules</a></li>
+            <li><a href="#bookings">Booking</a></li>
+            <li><a href="#myBookings">My Bookings</a></li>
+            <li id="adminMenu"><a href="#admin">Admin</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+    </nav>
+
+    <section id="home">
+        <img src="bus.jpg" alt="bus image" class="background-image">
+        <div class="content">
+            <h1>Welcome to RideSphere</h1>
+            <p>Your smart bus booking solution 🚍</p>
+            <div class="muted" style="margin-top:14px;">
+                <a href="#offers">Check latest offers</a> •
+                <a href="#bookings">Book now</a> •
+                <a href="#myBookings">Manage bookings</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="offers">
+        <h2>Offers for you 🎁</h2>
+        <p class="muted">Apply a coupon while booking to get instant discounts. T&C apply.</p>
+        <div class="offers-grid" id="offersGrid"></div>
+    </section>
+
+    <section id="routes">
+        <h2>Routes</h2>
+        <div id="routesStatus" class="muted"></div>
+        <table id="routesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Origin</th>
+                    <th>Destination</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section id="schedules">
+        <h2>Schedules</h2>
+        <div id="schedulesStatus" class="muted"></div>
+        <table id="schedulesTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Route</th>
+                    <th>Bus</th>
+                    <th>Departure</th>
+                    <th>Seats</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+
+    <section id="bookings">
+        <h2>Book a Seat</h2>
+        <div style="max-width:900px">
+            <label for="bookingScheduleSelect">Choose Schedule</label>
+            <select id="bookingScheduleSelect"></select>
+
+            <!-- Seat map -->
+            <div class="seatmap-wrap">
+                <div class="legend">
+                    <span><i class="legend-box window"></i> Window</span>
+                    <span><i class="legend-box aisle"></i> Aisle</span>
+                    <span><i class="legend-box middle"></i> Middle</span>
+                    <span><i class="legend-box front"></i> Front</span>
+                    <span><i class="legend-box back"></i> Back</span>
+                    <span><i class="legend-box booked"></i> Booked</span>
+                    <span><i class="legend-box selected"></i> Selected</span>
+                </div>
+
+                <div id="seatGrid" class="seat-grid" aria-label="Bus seats"></div>
+
+                <div class="seat-actions">
+                    <div id="seatSelectionInfo" class="muted">No seats selected.</div>
+                    <button class="btn-secondary" onclick="clearSeatSelection()">Clear selection</button>
+                </div>
+            </div>
+
+            <label for="bookingSeats">Seats</label>
+            <input id="bookingSeats" type="number" min="1" placeholder="Number of seats" />
+
+            <div class="muted">Fare per seat assumed: ₹100 • <a href="#offers">View offers</a></div>
+
+            <div style="margin-top:10px;">
+                <input id="promoCode" placeholder="Enter promo code (optional)" style="max-width:240px;" />
+                <button class="btn-secondary" onclick="applyCoupon()">Apply</button>
+                <button class="btn-secondary" onclick="clearCoupon()">Clear</button>
+                <div id="promoMessage" class="message" style="min-height:24px;"></div>
+            </div>
+
+            <div class="fare-card">
+                <div class="fare-row">
+                    <div>Base Fare</div>
+                    <div id="fareBase">₹0</div>
+                </div>
+                <div class="fare-row">
+                    <div class="muted">Discount</div>
+                    <div id="fareDiscount">- ₹0</div>
+                </div>
+                <div class="fare-row total">
+                    <div>To Pay</div>
+                    <div id="fareTotal">₹0</div>
+                </div>
+            </div>
+
+            <button style="margin-top:12px;" onclick="bookSeat()">Book</button>
+            <div id="bookingMessage" class="message"></div>
+
+            <div class="policy">
+                Cancellation Policy preview: • ≥ 24 hrs before departure: full refund • 3–24 hrs: 50% refund • &lt; 3 hrs: non-refundable (Actual refund depends on operator policy.)
+            </div>
+        </div>
+    </section>
+
+    <section id="myBookings">
+        <h2>My Bookings</h2>
+        <div id="myBookingsStatus" class="muted"></div>
+        <table id="bookingsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Schedule</th>
+                    <th>Route</th>
+                    <th>Seats</th>
+                    <th>Booked At</th>
+                    <th>Status</th>
+                    <th>QR</th>
+                    <th>Actions</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div class="policy">Tip: You can cancel active tickets before departure. Rating is enabled after the trip departs.</div>
+    </section>
+
+    <section id="admin">
+        <h2>Admin Panel</h2>
+        <div id="routeMessage" class="message"></div>
+        <input id="routeName" placeholder="Route Name" />
+        <input id="routeOrigin" placeholder="Origin" />
+        <input id="routeDestination" placeholder="Destination" />
+        <button onclick="addRoute()">Add Route</button>
+        <div id="scheduleMessage" class="message"></div>
+        <select id="adminRouteSelect"></select>
+        <input id="adminBusName" placeholder="Bus Name" />
+        <input id="adminDeparture" type="datetime-local" placeholder="Departure" />
+        <input id="adminSeats" type="number" min="1" placeholder="Seats" />
+        <button onclick="addSchedule()">Add Schedule</button>
+    </section>
+
+    <div id="qrModal">
+        <div id="qrModalContent">
+            <h3>Your Ticket QR</h3>
+            <img id="qrImage" src="" alt="QR" /><br /><br />
+            <button onclick="closeQR()">Close</button>
+        </div>
+    </div>
+
+    <div id="ratingModal">
+        <div id="ratingModalContent">
+            <h3>Rate your trip</h3>
+            <div class="stars" id="ratingStars">
+                <span class="star" data-v="1">★</span>
+                <span class="star" data-v="2">★</span>
+                <span class="star" data-v="3">★</span>
+                <span class="star" data-v="4">★</span>
+                <span class="star" data-v="5">★</span>
+            </div>
+            <div id="ratingInfo" class="muted">Select stars</div>
+            <textarea id="ratingComment" placeholder="Share your experience (optional)"></textarea>
+            <div style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
+                <button class="btn-secondary" onclick="submitRating()">Submit</button>
+                <button class="btn-danger" onclick="closeRating()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Rating Modal -->
+    <div id="appRatingModal" role="dialog" aria-modal="true" aria-labelledby="appRatingTitle" style="display:none;">
+        <div id="appRatingModalContent">
+            <button class="modal-close" aria-label="Close" onclick="closeAppRating()">×</button>
+            <h3 id="appRatingTitle">Rate RideSphere</h3>
+            <div class="stars" id="appRatingStars">
+                <span class="star" data-v="1">★</span>
+                <span class="star" data-v="2">★</span>
+                <span class="star" data-v="3">★</span>
+                <span class="star" data-v="4">★</span>
+                <span class="star" data-v="5">★</span>
+            </div>
+            <div id="appRatingInfo" class="muted">How are we doing?</div>
+            <textarea id="appRatingComment" placeholder="Share your feedback (optional)"></textarea>
+            <div style="margin-top:12px; display:flex; gap:8px; justify-content:center;">
+                <button class="btn-secondary" onclick="submitAppRating()">Submit</button>
+                <button class="btn-danger" onclick="closeAppRating()">Not now</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="netBanner" class="net-banner">Status</div>
+
+    <script src="app.js"></script>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            © <span id="copyrightYear"></span>2025 RideSphere. All rights reserved.
+        </div>
+    </footer>
+</body>
+
+</html>
